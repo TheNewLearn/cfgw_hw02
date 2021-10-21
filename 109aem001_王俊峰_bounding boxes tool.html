@@ -253,9 +253,10 @@ scene.add(mesh);
 			const cameracontrols = new OrbitControls(camera, renderer.domElement);
 			cameracontrols.minDistance = 10;
 			cameracontrols.maxDistance = 100;
-			cameracontrols.enableRotate = false;
+			cameracontrols.enableRotate = true;
 			
-			function initGui() {
+			function initGui() { 
+
 
 				const gui = new GUI();
 
@@ -281,7 +282,7 @@ scene.add(mesh);
 				function initControls() {
 
 					for (const key in dictionary) {
-						console.log(key);
+						
 						controls[key] = 0.0;
 						
 					}
@@ -385,9 +386,32 @@ scene.add(mesh);
 			var raycaster=new THREE.Raycaster();
 raycaster.setFromCamera(mouse, camera);
 var intersects = raycaster.intersectObjects(scene.children,true);
+if(intersects.length>0){
+	console.log(scene.children);	
+	console.log(intersects[2]);
+	
+	drawline(intersects[2].object.getObjectByName('左目').position.x,intersects[2].object.getObjectByName('左目').position.y);
+}
 
 
 			
+		}
+
+		function drawline(x,y){
+			var material = new THREE.LineBasicMaterial({color:0x0000ff});
+			var geometry = new THREE.BufferGeometry();
+
+			const points = [];
+points.push( new THREE.Vector3( - 0.5, 0, 0 ) );
+//oints.push( new THREE.Vector3( 0, 10, 0 ) );
+points.push( new THREE.Vector3( 0, 0, 0.5 ) );
+
+			geometry.setFromPoints(points);
+var line = new THREE.Line(geometry, material);
+line.position.x = x;
+line.position.y = y;
+line.position.z = 10;
+scene.add(line);
 		}
 
 
