@@ -395,14 +395,16 @@
 			var raycaster = new THREE.Raycaster();
 			raycaster.setFromCamera(mouse, camera);
 			var target = new THREE.Vector3();
-			var intersects = raycaster.intersectObjects(scene.children, true);
+			var intersects = raycaster.intersectObjects(scene.children, false);
+			
 
 			if (intersects.length > 0) {	
 				var vector = new THREE.Vector3().copy( intersects[ 0 ].point );
 				intersects[ 0 ].object.worldToLocal( vector );
 				let object = intersects[0].object
-				console.log( vector);
+				console.log( vector,object);
 				drawline(vector,object);
+				
 			}
 
 
@@ -416,15 +418,16 @@
 			var geometry = new THREE.BufferGeometry();
 
 			const points = [];
-			points.push(new THREE.Vector3(- 20, 0, 0));
-			
-			points.push(new THREE.Vector3(0, 0, 20));
+			points.push(new THREE.Vector3(-0.5, 0, 0));
+			points.push(new THREE.Vector3(1, 0, 0));
 
 			geometry.setFromPoints(points);
 			var line = new THREE.Line(geometry, material);
 			
 
 			line.position.y = vector.y;
+			line.position.x = vector.x;
+			line.position.z = 2;
 			
 			object.add(line);
 		}
