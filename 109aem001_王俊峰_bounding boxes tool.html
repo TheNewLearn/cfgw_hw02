@@ -91,7 +91,7 @@
 		let camera, scene, renderer, effect;
 		let mesh, helper;
 		let index = 0;
-		
+
 
 		const vpds = [];
 
@@ -100,7 +100,7 @@
 			Ammo = AmmoLib;
 
 
-		
+
 			init();
 			animate();
 
@@ -148,12 +148,12 @@
 				}
 
 			}
-			
 
-			const modelFile = ['models/mmd/kizunaai/kizunaai.pmx','models/mmd/Kokoro Amamiya/1.pmx'];
-			
 
-			
+			const modelFile = ['models/mmd/kizunaai/kizunaai.pmx', 'models/mmd/Kokoro Amamiya/1.pmx'];
+
+
+
 			const vpdFiles = [
 				'models/mmd/vpds/01.vpd',
 				'models/mmd/vpds/02.vpd',
@@ -168,7 +168,7 @@
 				'models/mmd/vpds/11.vpd'
 			];
 
-			
+
 
 			helper = new MMDAnimationHelper();
 
@@ -208,54 +208,59 @@
 				}
 
 				loadVpd();
-				
+
 			}, onProgress, null);
 
-			function changemodel(event){
-				if (event.key === "a" && index!=0 && index>0){
-					index-=1;
-					
+			scene.updateMatrixWorld(true);
+
+			function changemodel(event) {
+				if (event.key === "a" && index != 0 && index > 0) {
+					index -= 1;
+
 					scene.remove(mesh);
 					//scene.remove(vpd);
 					loader.load(modelFile[index], function (object) {
 
-mesh = object;
-mesh.position.y = - 10;
+						mesh = object;
+						mesh.position.y = - 10;
 
-scene.add(mesh);
+						scene.add(mesh);
 
-}, onProgress, null);
-				}else if(event.key === "d" && index<modelFile.length-1){
-					index+=1;
+					}, onProgress, null);
+				} else if (event.key === "d" && index < modelFile.length - 1) {
+
+					index += 1;
 					scene.remove(mesh);
 					//scene.remove(vpd);
 					loader.load(modelFile[index], function (object) {
 
-mesh = object;
-mesh.position.y = - 10;
+						mesh = object;
+						mesh.position.y = - 10;
 
-scene.add(mesh);
+						scene.add(mesh);
 
-}, onProgress, null);
+						console.log(position);
+
+					}, onProgress, null);
 				}
 				console.log(index);
-				
+
 
 			}
-			window.addEventListener('keypress',changemodel)
+			window.addEventListener('keypress', changemodel)
 
 			//
 
 			window.addEventListener('resize', onWindowResize);
-			window.addEventListener('click',onMouseclick);
-			
+			window.addEventListener('click', onMouseclick);
+
 			//鏡頭控制
 			const cameracontrols = new OrbitControls(camera, renderer.domElement);
 			cameracontrols.minDistance = 10;
 			cameracontrols.maxDistance = 100;
 			cameracontrols.enableRotate = true;
-			
-			function initGui() { 
+
+			function initGui() {
 
 
 				const gui = new GUI();
@@ -269,22 +274,22 @@ scene.add(mesh);
 				const morphs = gui.addFolder('Morphs');
 
 				function getBaseName(s) {
-					
+
 					return s.slice(s.lastIndexOf('/') + 1);
-					
+
 
 				}
 
-				function getmodelname(s){
+				function getmodelname(s) {
 					return s.slice(s.lastIndexOf('/') + 1);
 				}
 
 				function initControls() {
 
 					for (const key in dictionary) {
-						
+
 						controls[key] = 0.0;
-						
+
 					}
 
 					controls.pose = - 1;
@@ -307,7 +312,7 @@ scene.add(mesh);
 
 				}
 
-			
+
 
 				function initPoses() {
 
@@ -336,7 +341,7 @@ scene.add(mesh);
 				function onChangeMorph() {
 
 					for (let i = 0; i < keys.length; i++) {
-						
+
 						const key = keys[i];
 						const value = controls[key];
 						mesh.morphTargetInfluences[i] = value;
@@ -361,7 +366,7 @@ scene.add(mesh);
 
 				}
 
-				
+
 
 				initControls();
 				initKeys();
@@ -378,44 +383,54 @@ scene.add(mesh);
 
 		}
 
-		function onMouseclick(){
-			const mouse = new THREE.Vector2();
-			mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-			mouse.y = -( event.clientY / window.innerHeight ) * 2 + 1;
-			var position = new THREE.Vector3();
-			var raycaster=new THREE.Raycaster();
-raycaster.setFromCamera(mouse, camera);
-var intersects = raycaster.intersectObjects(scene.children,true);
-if(intersects.length>0){
-	console.log(scene.children);	
-	console.log(intersects[2]);
-	
-	drawline(intersects[2].object.getObjectByName('左目').position.x,intersects[2].object.getObjectByName('左目').position.y);
-}
-
-
+		function onMouseclick() {
 			
+
+
+
+			const mouse = new THREE.Vector2();
+			mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+			mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+			var position = new THREE.Vector3();
+			var raycaster = new THREE.Raycaster();
+			raycaster.setFromCamera(mouse, camera);
+			var target = new THREE.Vector3();
+			var intersects = raycaster.intersectObjects(scene.children, true);
+
+			if (intersects.length > 0) {	
+				var vector = new THREE.Vector3().copy( intersects[ 0 ].point );
+				intersects[ 0 ].object.worldToLocal( vector );
+				let object = intersects[0].object
+				console.log( vector);
+				drawline(vector,object);
+			}
+
+
+
 		}
 
-		function drawline(x,y){
-			var material = new THREE.LineBasicMaterial({color:0x0000ff});
+
+
+		function drawline(vector,object) {
+			var material = new THREE.LineBasicMaterial({ color: 0x0000ff });
 			var geometry = new THREE.BufferGeometry();
 
 			const points = [];
-points.push( new THREE.Vector3( - 0.5, 0, 0 ) );
-//oints.push( new THREE.Vector3( 0, 10, 0 ) );
-points.push( new THREE.Vector3( 0, 0, 0.5 ) );
+			points.push(new THREE.Vector3(- 20, 0, 0));
+			
+			points.push(new THREE.Vector3(0, 0, 20));
 
 			geometry.setFromPoints(points);
-var line = new THREE.Line(geometry, material);
-line.position.x = x;
-line.position.y = y;
-line.position.z = 10;
-scene.add(line);
+			var line = new THREE.Line(geometry, material);
+			
+
+			line.position.y = vector.y;
+			
+			object.add(line);
 		}
 
 
-	
+
 
 		function onWindowResize() {
 
