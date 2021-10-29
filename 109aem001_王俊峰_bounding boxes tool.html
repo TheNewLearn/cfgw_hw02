@@ -239,7 +239,7 @@
 
 						scene.add(mesh);
 
-						console.log(position);
+						
 
 					}, onProgress, null);
 				}
@@ -252,7 +252,7 @@
 			//
 
 			window.addEventListener('resize', onWindowResize);
-			window.addEventListener('click', onMouseclick);
+			window.addEventListener('mousemove', onmousemove,false);
 
 			//鏡頭控制
 			const cameracontrols = new OrbitControls(camera, renderer.domElement);
@@ -383,38 +383,73 @@
 
 		}
 
-		function onMouseclick() {
+		function onmousemove() {
 			
 
 
 
-			const mouse = new THREE.Vector2();
-			mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-			mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-			var position = new THREE.Vector3();
+			const mouse = new THREE.Vector3();
+			
+			const { left, top, width, height } = event.target.getBoundingClientRect();
+			mouse.set(
+				((event.clientX - left + 1) / width) * 2 - 1,
+-((event.clientY - top + 1) / height) * 2 + 1,
+(camera.near + camera.far) / (camera.near - camera.far),
+			);
+			mouse.unproject(camera);
 			var raycaster = new THREE.Raycaster();
 			raycaster.setFromCamera(mouse, camera);
-			var target = new THREE.Vector3();
+			var intersects = raycaster.intersectObjects(scene.children);
+			for ( let i = 0; i < intersects.length; i ++ ) {
+
+		intersects[ i ].object.material.color.set( 0xff0000 );
+
+	}
+			
+			/*
+			var raycaster = new THREE.Raycaster();
+			raycaster.setFromCamera(mouse, camera);
 			var intersects = raycaster.intersectObjects(scene.children, false);
 			
 
-			if (intersects.length > 0) {	
-				var vector = new THREE.Vector3().copy( intersects[ 0 ].point );
-				intersects[ 0 ].object.worldToLocal( vector );
-				let object = intersects[0].object
-				console.log( vector,object);
-				drawline(vector,object);
+			if (intersects.length > 0) {
+				
+				
+				
 				
 			}
 
+	*/
+	    
+		
+		document.onclick = function(){
+			if(scene.getObjectByName("左眼下") == null)
+			{
+				drawline(mouse,"#ff0000","左眼下");
+			}
+			else if(scene.getObjectByName("左眼上") == null)
+			{
+				drawline(mouse,"#ff0000","左眼上");
+			}
+			else if(scene.getObjectByName("左眼左")==null){
+				drawline2(mouse,"#00ff00","左眼左");
+			}
+			else if(scene.getObjectByName("左眼右")==null){
+				drawline2(mouse,"#00ff00","左眼右");
+			}
+			
+		}
+		
 
+			
 
 		}
 
 
 
-		function drawline(vector,object) {
-			var material = new THREE.LineBasicMaterial({ color: 0x0000ff });
+		function drawline(vector,color,name) {
+			
+			var material = new THREE.LineBasicMaterial({ color: color });
 			var geometry = new THREE.BufferGeometry();
 
 			const points = [];
@@ -424,12 +459,34 @@
 			geometry.setFromPoints(points);
 			var line = new THREE.Line(geometry, material);
 			
-
+			line.name = name;
 			line.position.y = vector.y;
 			line.position.x = vector.x;
 			line.position.z = 2;
+			console.log(vector);
+	
+			scene.add(line);
+		}
+
+		function drawline2(vector,color,name) {
 			
-			object.add(line);
+			var material = new THREE.LineBasicMaterial({ color: color });
+			var geometry = new THREE.BufferGeometry();
+
+			const points = [];
+			points.push(new THREE.Vector3(0, -0.5, 0));
+			points.push(new THREE.Vector3(0, 1, 0));
+
+			geometry.setFromPoints(points);
+			var line = new THREE.Line(geometry, material);
+			
+			line.name = name;
+			line.position.y = vector.y;
+			line.position.x = vector.x;
+			line.position.z = 2;
+			console.log(vector);
+	
+			scene.add(line);
 		}
 
 
