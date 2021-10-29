@@ -243,7 +243,46 @@
 
 					}, onProgress, null);
 				}
-				console.log(index);
+				else if(event.key === "q"){
+					if(scene.getObjectByName("左眼下") != null && scene.getObjectByName("右眼下") == null ){
+						var v = new THREE.Vector3()
+						var posit = scene.getObjectByName("左眼下").position
+						v.x = -posit.x * 2;
+						v.y = posit.y;
+						v.z - posit.z;
+						drawline(v,"#A569BD","右眼下");
+						
+					}
+					else if(scene.getObjectByName("左眼上") != null && scene.getObjectByName("右眼上") == null){
+						var v = new THREE.Vector3()
+						var posit = scene.getObjectByName("左眼上").position
+						v.x = -posit.x * 2;
+						v.y = posit.y;
+						v.z - posit.z;
+						drawline(v,"#A569BD","右眼上");
+					}
+					else if(scene.getObjectByName("左眼左") != null && scene.getObjectByName("右眼左") == null){
+						var v = new THREE.Vector3()
+						var posit = scene.getObjectByName("左眼左").position
+						v.x = -posit.x ;
+						v.y = posit.y;
+						v.z - posit.z;
+						drawline2(v,"#3498DB","右眼左");
+					}
+					else if(scene.getObjectByName("左眼右") != null && scene.getObjectByName("右眼右") == null){
+						var v = new THREE.Vector3()
+						var posit = scene.getObjectByName("左眼右").position
+						v.x = -posit.x ;
+						v.y = posit.y;
+						v.z - posit.z;
+						drawline2(v,"#3498DB","右眼右");
+					}
+
+
+
+
+				}
+				
 
 
 			}
@@ -439,6 +478,7 @@
 			}
 			
 		}
+		
 		
 
 			
